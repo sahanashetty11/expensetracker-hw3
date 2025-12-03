@@ -44,4 +44,36 @@ public class InputValidation {
   
   }
 
+  /**
+   * Validates a CSV file name.
+   * The file name must be non-empty and end with ".csv"
+   * 
+   * @param fileName The file name to validate
+   * @return true if the file name is valid, false otherwise
+   */
+  public static boolean isValidCSVFileName(String fileName) {
+    if (fileName == null) {
+      return false;
+    }
+    
+    String trimmedFileName = fileName.trim();
+    
+    // Check if empty
+    if (trimmedFileName.isEmpty()) {
+      return false;
+    }
+    
+    // Check if ends with .csv (case-insensitive)
+    if (!trimmedFileName.toLowerCase().endsWith(Constants.CSV_FILE_EXTENSION)) {
+      return false;
+    }
+    
+    // Check if there's a name before the extension (not just ".csv")
+    if (trimmedFileName.length() <= Constants.CSV_FILE_EXTENSION.length()) {
+      return false;
+    }
+    
+    return true;
+  }
+
 }

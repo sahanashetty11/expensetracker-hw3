@@ -2,6 +2,7 @@ package controller;
 
 import view.ExpenseTrackerView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,10 +22,17 @@ public class ExpenseTrackerController {
    * being used in the applyFilter method.
    */
   private TransactionFilter filter;
+  
+  /**
+   * CSV exporter for exporting transactions to CSV files.
+   * This follows the open-closed principle by delegating export logic.
+   */
+  private CSVExporter csvExporter;
 
   public ExpenseTrackerController(ExpenseTrackerModel model, ExpenseTrackerView view) {
     this.model = model;
     this.view = view;
+    this.csvExporter = new CSVExporter();
   }
 
   /**
@@ -98,6 +106,53 @@ public class ExpenseTrackerController {
       filteredTransactions = filter.filter(transactions);
     }
     view.displayFilteredTransactions(filteredTransactions);
+  }
+
+  /**
+   * Exports transactions to a CSV file.
+   * Validates the file name and shows appropriate error/success messages.
+   * 
+   * @param fileName The name of the CSV file to export to
+   */
+  public void exportToCSV(String fileName) {
+    // Validate the file name
+    if (!InputValidation.isValidCSVFileName(fileName)) {
+      if (fileName == null || fileName.trim().isEmpty()) {
+        JOptionPane.showMessageDialog(view, 
+                                      Constants.ERROR_EMPTY_FILENAME, 
+                                      Constants.DIALOG_TITLE_ERROR, 
+                                      JOptionPane.ERROR_MESSAGE);
+      } else {
+        JOptionPane.showMessageDialog(view, 
+                                      Constants.ERROR_INVALID_CSV_EXTENSION, 
+                                      Constants.DIALOG_TITLE_ERROR, 
+                                      JOptionPane.ERROR_MESSAGE);
+      }
+      view.toFront();
+      return;
+    }
+    
+    try {
+      // Get the currently displayed transactions (respects filters)
+      List<Transaction> transactionsToExport = view.getDisplayedTransactions();
+      
+      // Export using the CSVExporter
+      csvExporter.exportTransactions(transactionsToExport, fileName.trim());
+      
+      // Show success message
+      JOptionPane.showMessageDialog(view, 
+                                    Constants.SUCCESS_EXPORT + fileName.trim(), 
+                                    Constants.DIALOG_TITLE_SUCCESS, 
+                                    JOptionPane.INFORMATION_MESSAGE);
+      view.toFront();
+    } catch (IOException e) {
+      // Show error message if export fails
+      JOptionPane.showMessageDialog(view, 
+                                    Constants.ERROR_EXPORT_FAILED + "\n" + e.getMessage(), 
+                                    Constants.DIALOG_TITLE_ERROR, 
+                                    JOptionPane.ERROR_MESSAGE);
+      view.toFront();
+    }
   }
     
 }

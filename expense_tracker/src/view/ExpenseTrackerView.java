@@ -25,6 +25,10 @@ public class ExpenseTrackerView extends JFrame {
   private JButton amountFilterBtn;
 
   private JButton clearFilterBtn;
+  
+  // CSV Export components
+  private JTextField csvFileNameField;
+  private JButton exportCSVBtn;
     
   private List<Transaction> displayedTransactions = new ArrayList<>(); // ✅ Moved here
 
@@ -56,6 +60,14 @@ public class ExpenseTrackerView extends JFrame {
 
     clearFilterBtn = new JButton("Clear Filter");
     
+    // CSV Export components
+    JLabel csvFileNameLabel = new JLabel("CSV File Name:");
+    csvFileNameField = new JTextField(15);
+    exportCSVBtn = new JButton("Export to CSV");
+    JLabel csvHelpLabel = new JLabel("(e.g., expenses.csv)");
+    csvHelpLabel.setFont(csvHelpLabel.getFont().deriveFont(10f));
+    csvHelpLabel.setForeground(Color.GRAY);
+    
     JPanel inputPanel = new JPanel();
     inputPanel.add(amountLabel);
     inputPanel.add(amountField);
@@ -68,9 +80,22 @@ public class ExpenseTrackerView extends JFrame {
     buttonPanel.add(categoryFilterBtn);
     buttonPanel.add(clearFilterBtn);
     
+    // Export panel
+    JPanel exportPanel = new JPanel();
+    exportPanel.add(csvFileNameLabel);
+    exportPanel.add(csvFileNameField);
+    exportPanel.add(exportCSVBtn);
+    exportPanel.add(csvHelpLabel);
+    
+    // Combine button and export panels
+    JPanel bottomPanel = new JPanel();
+    bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
+    bottomPanel.add(buttonPanel);
+    bottomPanel.add(exportPanel);
+    
     add(inputPanel, BorderLayout.NORTH);
     add(new JScrollPane(transactionsTable), BorderLayout.CENTER); 
-    add(buttonPanel, BorderLayout.SOUTH);
+    add(bottomPanel, BorderLayout.SOUTH);
 
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setVisible(true);
@@ -171,6 +196,24 @@ public class ExpenseTrackerView extends JFrame {
 
   public List<Transaction> getDisplayedTransactions() {
     return displayedTransactions;
+  }
+
+  /**
+   * Gets the CSV file name entered by the user.
+   * 
+   * @return The CSV file name
+   */
+  public String getCSVFileName() {
+    return csvFileNameField.getText();
+  }
+
+  /**
+   * Adds an action listener to the Export to CSV button.
+   * 
+   * @param listener The action listener to add
+   */
+  public void addExportCSVListener(ActionListener listener) {
+    exportCSVBtn.addActionListener(listener);
   }
 
   // Optional: remove if no longer needed

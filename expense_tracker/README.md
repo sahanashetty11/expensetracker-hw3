@@ -46,8 +46,16 @@ Please ensure your JDK version is compatible (JDK 8 recommended).
   Filter by amount or category.
   Implemented using the `TransactionFilter` interface and concrete classes `AmountFilter` and `CategoryFilter` for reusability and extensibility.
 
+* **Export to CSV:**
+  Export transaction history to a CSV (Comma Separated Value) file.
+  Enter a filename ending with .csv and click **Export to CSV**.
+  The application validates the filename and provides clear feedback.
+  Exported files include column headers and one transaction per row.
+  Respects active filters - exports only displayed transactions.
+
 * **Input Validation:**
   Reuses Homework 1 validation logic for both adding transactions and filtering.
+  Validates CSV filenames to ensure they are non-empty and end with .csv extension.
 
 ## Testing
 
@@ -66,7 +74,48 @@ All tests pass successfully (see `test_screenshot.png`).
 
 
 ### **Usability: Export to CSV file**
-For this feature, I would add an “Export to CSV” option in the UI where the user can enter a file name and click export. The controller will take that input, validate the file name (for example, must end with .csv and contain no invalid characters), and then get all transactions from the model. It will call a helper class like CSVExporter that writes the data to a CSV file with proper headers and one transaction per line. The user will get clear feedback on success or failure through the view. This follows MVC separation, avoids hardcoded strings, and keeps the controller open for adding new export formats later (like JSON) without changing existing code.
+
+The CSV export feature has been fully implemented with the following capabilities:
+- UI provides a text field for entering the CSV filename with help text
+- Input validation ensures the filename is non-empty and ends with .csv
+- Controller coordinates validation and export operations
+- CSVExporter class handles file writing with proper CSV formatting
+- Clear error dialogs for invalid input (empty filename or missing .csv extension)
+- Success confirmation dialog shows the exported filename
+- Follows MVC architecture, OO design principles (open-closed), and avoids magic strings
+- All string constants defined in Constants.java
+- Exports respect active filters (exports only displayed transactions)
+
+The implementation strictly follows the Model-View-Controller pattern:
+
+#### **Model** (`model` package)
+- `Transaction.java` - Represents individual transactions (unchanged)
+- `ExpenseTrackerModel.java` - Manages transaction data (unchanged)
+
+#### **View** (`view` package)
+- `ExpenseTrackerView.java` - **Modified** to add:
+  - CSV filename input field (`csvFileNameField`)
+  - Export button (`exportCSVBtn`)
+  - Help label with example text
+  - Public methods: `getCSVFileName()`, `addExportCSVListener()`
+
+#### **Controller** (`controller` package)
+- `ExpenseTrackerController.java` - **Modified** to add:
+  - `CSVExporter` instance
+  - `exportToCSV(String fileName)` method
+  - Coordinates validation and export operations
+- `CSVExporter.java` - **NEW** class responsible for:
+  - Writing transactions to CSV format
+  - Proper CSV escaping of special characters
+  - Clean separation of export logic
+- `InputValidation.java` - **Modified** to add:
+  - `isValidCSVFileName(String fileName)` method
+- `Constants.java` - **NEW** class containing all string constants
+
+---
+
+
+
 
 
 ### **Project Structure**

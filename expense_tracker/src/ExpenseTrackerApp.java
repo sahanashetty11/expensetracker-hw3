@@ -82,6 +82,19 @@ public class ExpenseTrackerApp {
         controller.setFilter(null);
         controller.applyFilter();
       });
+
+      // Add action listener to the "Export to CSV" button
+      view.addExportCSVListener(e -> {
+        try {
+          String fileName = view.getCSVFileName();
+          controller.exportToCSV(fileName);
+        } catch (Exception ex) {
+          // Catch any unexpected runtime errors and show a helpful dialog
+          String msg = ex.getMessage() == null ? ex.toString() : ex.getMessage();
+          JOptionPane.showMessageDialog(view, "An unexpected error occurred during export: " + msg, "Error", JOptionPane.ERROR_MESSAGE);
+          ex.printStackTrace();
+        }
+      });
     });
   }
 }
